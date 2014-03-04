@@ -1,0 +1,58 @@
+<link rel="import" href="components/polymer/polymer.html"> 
+<polymer-element name="leaflet-map" attributes="latitude longitude zoom">
+
+  <template>
+    <style>
+
+      :host {
+        display: block;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+    <div id="map"></div>
+  </template>
+
+  <script>
+    Polymer('leaflet-map', {
+      latitude:  0,
+      longitude: 0,
+      zoom: 0,
+      ready: function() {
+        this.map = L.map(this.$.map).setView([this.latitude, this.longitude], this.zoom)
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+            maxZoom: 18
+        }).addTo(this.map)
+      },
+      enteredDocument: function() {
+        this.resize();
+      },
+      resize: function() {
+        this.map.fire('resize')
+        this.updateCenter()
+      },
+      latitudeChanged: function() {
+        var latitude = this.getAttribute('latitude')
+      },
+      longitudeChanged: function() {
+        var longitude = this.getAttribute('longitude')
+      },
+      updateCenter: function(opt_lat, opt_long, opt_zoom) {
+        this.map.setView(
+          L.latLng(
+            opt_lat !== undefined ? opt_lat : this.latitude,
+            opt_long !== undefined ? opt_long : this.longitude
+          ),
+          opt_zoom !== undefined ? opt_zoom : this.zoom
+        )
+      },
+      zoomChanged: function() {
+        var zoom = this.getAttribute('zoom');
+        this.map.setZoom(+zoom)
+      }
+    });
+  </script>
+
+</polymer-element>
